@@ -1,13 +1,13 @@
-name: CD-PROD
+name: CD-QA
 
 on:
   push:
-    branches: ["main"]
+    branches: ["develop"]
   workflow_dispatch:
 
 env:
   dockerimage_tag: ${{ github.sha }}
-  dockerimage_name: scgskku/shortener-api-prod
+  dockerimage_name: scgskku/shortener-api-qa
 
 jobs:
   build:
@@ -82,7 +82,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: SystemConsultantGroup/shortener-config
-          ref: main
+          ref: develop
           token: ${{ secrets.ACTION_TOKEN }}
           path: shortener-config
 
@@ -91,7 +91,7 @@ jobs:
 
       - name: Config Repo 이미지 값 업데이트 (Kustomize)
         run: |
-          cd shortener-config/overlays/prod/api/
+          cd shortener-config/overlays/qa/api/
           kustomize edit set image ${{ env.dockerimage_name }}:${{ env.dockerimage_tag }}
           echo "---- Updated kustomization.yaml ----"
           cat kustomization.yaml
@@ -111,7 +111,7 @@ jobs:
           fi
 
           git commit -m "Update shortener-api image to ${{ env.dockerimage_tag }}"
-          git push origin main
+          git push origin develop
 
       - name: --------------- Clean Up ---------------
         run: echo "Clean Up"
