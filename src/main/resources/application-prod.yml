@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    open-in-view: false # OSIV 패턴 비활성화 (for lazy loading)
+    show-sql: false # hibernate console 미출력
+    hibernate:
+      ddl-auto: create # entity 확정 후 none 으로 변경 요망
+    properties:
+      hibernate:
+        default_batch_fetch_size: 15
+        dialect: org.hibernate.dialect.MySQLDialect

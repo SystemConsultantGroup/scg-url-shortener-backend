@@ -35,7 +35,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Gradle build
-        run: ./gradlew build --exclude-task test --exclude-task asciidoctor
+        run: ./gradlew build -x test
 
       - name: Docker 준비(1/4) - 메타데이터 생성
         id: meta
