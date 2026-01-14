@@ -23,13 +23,14 @@ public class URL {
     @Column(unique = true, nullable = false)
     private String slug;
 
-    @Column(nullable = false)
-    private String target_url;
+    @Column(name = "target_url", nullable = false)
+    private String targetUrl;
 
     @CreationTimestamp
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime created_at;
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private LocalDateTime updated_at;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

@@ -22,6 +22,6 @@ public class User {
     private String nickname;
 
     @CreationTimestamp
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime created_at;
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private LocalDateTime createdAt;
 }
