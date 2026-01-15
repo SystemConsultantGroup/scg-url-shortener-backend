@@ -1,1 +1,4 @@
 server.port: 8000
+
+app:
+  dashboard-url: https://shortener-prod.scg.skku.ac.kr/
