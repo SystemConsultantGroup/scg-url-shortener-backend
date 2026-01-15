@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 public class UrlMapping {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -32,13 +32,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UrlMapping> urlMappings = new ArrayList<>();
 
-    public void addUrlMapping(UrlMapping urlMapping) {
-        this.urlMappings.add(urlMapping);
-        if(urlMapping.getUser() != this) {
-            urlMapping.setUser(this);
-        }
-    }
-
     @Builder
     public User(String email, String nickname) {
         this.email = email;
