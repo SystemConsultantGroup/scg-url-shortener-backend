@@ -1,5 +1,6 @@
 package com.scg.shortener.entity;
 
+import com.scg.shortener.user.dto.request.UrlMappingRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,7 +23,7 @@ public class UrlMapping {
     @Column(unique = true, nullable = false)
     private String slug;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(length = 2048, nullable = false)
     private String targetUrl;
 
     @CreatedDate
@@ -37,5 +38,13 @@ public class UrlMapping {
         this.user = user;
         this.slug = slug;
         this.targetUrl = targetUrl;
+    }
+
+    public void updateTargetUrl(String targetUrl) {
+        this.targetUrl = targetUrl;
+    }
+
+    public void updateSlug(String slug) {
+        this.slug = slug;
     }
 }
