@@ -1,6 +1,5 @@
 package com.scg.shortener.entity;
 
-import com.scg.shortener.user.dto.request.UrlMappingRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

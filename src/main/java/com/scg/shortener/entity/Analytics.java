@@ -14,28 +14,27 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @IdClass(Analytics.AnalyticsId.class)
-@Table(name = "analytics")
 public class Analytics {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AnalyticsId implements Serializable {
-        private String slug;
+        private UrlMapping slug;
         private int hour;
     }
 
     @Id
-    @Column(nullable = false, length = 100)
-    private String slug;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private UrlMapping slug;
 
     @Id
     @Column(nullable = false)
     private int hour;
 
-    @Column(name = "visit_count", nullable = false)
+    @Column(nullable = false)
     private int visitCount = 0;
 
-    @Column(name = "unique_visit_count", nullable = false)
+    @Column(nullable = false)
     private int uniqueVisitCount = 0;
-
 }

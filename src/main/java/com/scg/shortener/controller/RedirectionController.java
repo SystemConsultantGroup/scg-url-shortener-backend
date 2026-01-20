@@ -35,20 +35,19 @@ public class RedirectionController {
             @PathVariable String slug,
             @CookieValue(name = "visited", defaultValue = "false") String visited) {
         String targetUrl = redirectionService.getTargetUrl(slug);
-        if (targetUrl != null) {
-            analyticsService.track(slug, "true".equals(visited));
-            ResponseCookie cookie = ResponseCookie.from("visited", "true")
-                    .path("/" + slug)
-                    .maxAge(Duration.ofDays(365))
-                    .build();
-            // we use FOUND instead of MOVED_PERMANENTLY here to open up room for change
-            // responses with MOVED_PERMANENTLY are semi-permanently cached by the browser
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create(targetUrl))
-                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    .build();
-        } else {
+        if (targetUrl == null) {
             return ResponseEntity.notFound().build();
         }
+        analyticsService.track(slug, "true".equals(visited));
+        ResponseCookie cookie = ResponseCookie.from("visited", "true")
+                .path("/" + slug)
+                .maxAge(Duration.ofDays(365))
+                .build();
+        // we use FOUND instead of MOVED_PERMANENTLY here to open up room for change
+        // responses with MOVED_PERMANENTLY are semi-permanently cached by the browser
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(targetUrl))
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 }
