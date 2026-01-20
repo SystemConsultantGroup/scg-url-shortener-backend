@@ -1,13 +1,16 @@
-package com.scg.shortener.entity;
+package com.scg.shortener.UrlMapping.entity;
+import com.scg.shortener.User.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 public class UrlMapping {
     @Id

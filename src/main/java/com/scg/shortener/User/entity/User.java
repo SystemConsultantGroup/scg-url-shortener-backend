@@ -1,5 +1,6 @@
-package com.scg.shortener.entity;
+package com.scg.shortener.User.entity;
 
+import com.scg.shortener.UrlMapping.entity.UrlMapping;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
