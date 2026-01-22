@@ -1,6 +1,7 @@
 package com.scg.shortener.repository;
 
 import com.scg.shortener.entity.Analytics;
+import com.scg.shortener.entity.UrlMapping;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,18 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface AnalyticsRepository extends JpaRepository<Analytics, Analytics.AnalyticsId> {
-    @Query("""
-            SELECT a.hour AS hour,
-                    a.visitCount AS visitCount,
-                    a.uniqueVisitCount AS uniqueVisitCount
-            FROM Analytics a
-            WHERE a.slug.id = :slug
-                AND a.hour BETWEEN :start AND :end
-            """)
-    List<Object[]> findBySlugAndHourBetween(
-            @Param("slug") long slug,
-            @Param("start") int start,
-            @Param("end") int end);
+    List<Analytics> findBySlug(UrlMapping slug);
 
     @Modifying
     @Transactional

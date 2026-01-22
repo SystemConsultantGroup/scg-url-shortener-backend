@@ -1,5 +1,10 @@
 package com.scg.shortener.service;
 
+import com.scg.shortener.dto.AnalyticsResponse;
+import com.scg.shortener.dto.AnalyticsResponse.DailyStat;
+import com.scg.shortener.dto.AnalyticsResponse.HourlyStat;
+import com.scg.shortener.entity.Analytics;
+import com.scg.shortener.entity.UrlMapping;
 import com.scg.shortener.repository.AnalyticsRepository;
 import com.scg.shortener.repository.UrlMappingRepositry;
 
@@ -8,12 +13,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,12 +61,52 @@ public class AnalyticsService {
         });
     }
 
+    public AnalyticsResponse getAnalyticsResponse(String slug) {
+        UrlMapping urlMapping = urlMappingRepositry.findBySlug(slug).orElseThrow();
+        List<Analytics> analytics = analyticsRepository.findBySlug(urlMapping);
+
+        long totalClicks = analytics.stream().mapToLong(Analytics::getVisitCount).sum();
+
+        List<HourlyStat> hourlyStats = analytics.stream().map(a -> {
+            LocalDateTime time = LocalDateTime.ofInstant(
+                    Instant.ofEpochSecond((long) a.getHour() * 3600),
+                    ZoneId.systemDefault());
+            return new HourlyStat(time, a.getVisitCount(), a.getUniqueVisitCount());
+        }).collect(Collectors.toList());
+
+        Map<Integer, DailyStat> dailyStatsMap = new HashMap<>();
+
+        for (Analytics a : analytics) {
+            LocalDateTime time = LocalDateTime.ofInstant(
+                    Instant.ofEpochSecond((long) a.getHour() * 3600),
+                    ZoneId.systemDefault());
+            int day = (int) time.toLocalDate().toEpochDay();
+
+            dailyStatsMap.compute(day, (k, v) -> {
+                if (v == null) {
+                    String date = DateTimeFormatter.ISO_LOCAL_DATE.format(time);
+                    return new DailyStat(date, a.getVisitCount(), a.getUniqueVisitCount());
+                }
+                return new DailyStat(v.date(), v.count() + a.getVisitCount(),
+                        v.uniqueCount() + a.getUniqueVisitCount());
+            });
+        }
+
+        List<DailyStat> dailyStats = dailyStatsMap.values().stream()
+                .sorted(Comparator.comparing(DailyStat::date))
+                .collect(Collectors.toList());
+
+        return new AnalyticsResponse(totalClicks, hourlyStats, dailyStats);
+    }
+
     public List<int[]> getAnalytics(String slug, int start, int end) {
-        long slugId = urlMappingRepositry.findBySlug(slug).orElseThrow().getId();
-        List<Object[]> raw = analyticsRepository.findBySlugAndHourBetween(slugId, start, end);
+        UrlMapping urlMapping = urlMappingRepositry.findBySlug(slug).orElseThrow();
+        List<Analytics> raw = analyticsRepository.findBySlug(urlMapping);
         List<int[]> result = new ArrayList<>(raw.size() + 1);
-        for (Object[] row : raw) {
-            result.add(new int[] { (int) row[0], (int) row[1], (int) row[2] });
+        for (Analytics a : raw) {
+            if (a.getHour() >= start && a.getHour() <= end) {
+                result.add(new int[] { a.getHour(), a.getVisitCount(), a.getUniqueVisitCount() });
+            }
         }
         int hour = (int) (System.currentTimeMillis() / 1000 / 3600);
         if (hour >= start && hour <= end) {
