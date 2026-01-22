@@ -2,7 +2,7 @@ spring:
   application:
     name: shortener
   profiles:
-    default: dev
+    active: dev
     group:
-      prod: common, prod
-      dev: common, dev
+      dev: "common,dev,oauth"
+      prod: "common,prod,oauth"
