@@ -20,7 +20,7 @@ public class AnalyticsController {
     private final AnalyticsService analyticsService;
     private final UrlMappingRepositry urlMappingRepositry;
 
-    @GetMapping("/api/v1/urls/{slug}/analytics")
+    @GetMapping("/urls/{slug}/analytics")
     public AnalyticsResponse getAnalytics(
             @PathVariable String slug,
             Principal principal) {
