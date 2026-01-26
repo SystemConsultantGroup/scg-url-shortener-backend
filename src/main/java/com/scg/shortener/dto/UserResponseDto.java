@@ -1,21 +1,19 @@
 package com.scg.shortener.dto;
 
-import com.scg.shortener.domain.user.UserEntity;
+import com.scg.shortener.User.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 public class UserResponseDto {
-    private String name;
+    private String nickname;
     private String email;
     private String picture;
-    private String role;
 
-    public UserResponseDto(UserEntity entity) {
-        this.name = entity.getName();
+    public UserResponseDto(User entity) {
+        this.nickname = entity.getNickname();
         this.email = entity.getEmail();
         this.picture = entity.getPicture();
-        this.role = entity.getRole().getKey();
     }
 }

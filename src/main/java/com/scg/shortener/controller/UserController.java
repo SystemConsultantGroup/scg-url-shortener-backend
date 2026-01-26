@@ -1,7 +1,7 @@
 package com.scg.shortener.controller;
 
 import com.scg.shortener.dto.UserResponseDto;
-import com.scg.shortener.domain.user.UserEntity;
+import com.scg.shortener.User.entity.User;
 import com.scg.shortener.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1")
 public class UserController {
     private final UserRepository userRepository;
 
@@ -28,7 +27,7 @@ public class UserController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
 
-        UserEntity userEntity = userRepository.findByEmail(email)
+        User userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 사용자입니다. email=" + email));
 
         return ResponseEntity.ok(new UserResponseDto(userEntity));

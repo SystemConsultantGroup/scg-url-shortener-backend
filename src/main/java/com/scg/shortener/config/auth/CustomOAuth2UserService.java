@@ -1,8 +1,7 @@
 package com.scg.shortener.config.auth;
 
-import com.scg.shortener.domain.user.UserEntity;
+import com.scg.shortener.User.entity.User;
 import com.scg.shortener.domain.user.UserRepository;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -15,13 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
-    private final HttpSession httpSession;
 
     @Override
     @Transactional
@@ -29,32 +28,36 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        // 현재 로그인 진행 중인 서비스 구분 (google, naver 등)
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        // OAuth2 로그인 진행 시 키가 되는 필드 값 (Primary Key 역할)
+        String email = (String) attributes.get("email");
+        String name = (String) attributes.get("name");
+        String picture = (String) attributes.get("picture");
+        String providerId = (String) attributes.get("sub");
+        String provider = "google";
+
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
-        // 가져온 OAuth2User의 attribute를 담을 DTO 클래스
-        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
-
-        UserEntity userEntity = saveOrUpdate(attributes);
+        User user = saveOrUpdate(email, name, picture, provider, providerId);
 
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(userEntity.getRoleKey())),
-                attributes.getAttributes(),
-                attributes.getNameAttributeKey());
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                attributes,
+                userNameAttributeName);
     }
 
-    /**
-     * 이메일을 기준으로 기존 유저 여부를 판단하여 업데이트하거나 신규 생성합니다.
-     */
-    private UserEntity saveOrUpdate(OAuthAttributes attributes) {
-        UserEntity userEntity = userRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
-                .orElse(attributes.toEntity());
+    private User saveOrUpdate(String email, String name, String picture, String provider, String providerId) {
+        User user = userRepository.findByEmail(email)
+                .map(entity -> entity.update(name, picture))
+                .orElse(User.builder()
+                        .nickname(name)
+                        .email(email)
+                        .picture(picture)
+                        .provider(provider)
+                        .providerId(providerId)
+                        .build());
 
-        return userRepository.save(userEntity);
+        return userRepository.save(user);
     }
 }
