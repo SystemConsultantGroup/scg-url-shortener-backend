@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class UrlResponse {
     private Long id;
     private List<UrlMappingDto> urlMappings;
 }

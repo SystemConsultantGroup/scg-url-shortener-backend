@@ -1,7 +1,7 @@
 package com.scg.shortener.UrlMapping.controller;
 
 import com.scg.shortener.UrlMapping.dto.request.UrlMappingRequest;
-import com.scg.shortener.UrlMapping.dto.response.UserResponse;
+import com.scg.shortener.UrlMapping.dto.response.UrlResponse;
 import com.scg.shortener.UrlMapping.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,27 +13,27 @@ public class UrlController {
     private final UrlService urlService;
 
     @GetMapping("/urls")
-    public ResponseEntity<UserResponse> showURL() {
+    public ResponseEntity<UrlResponse> showURL() {
         Long userId = 1L; // 추후 인증정보에서 가져올 예정
-        UserResponse userResponse = urlService.showURL(userId);
-        return ResponseEntity.ok(userResponse);
+        UrlResponse urlResponse = urlService.showURL(userId);
+        return ResponseEntity.ok(urlResponse);
     }
 
     @PostMapping("/urls")
-    public ResponseEntity<UserResponse> addURL(@RequestBody UrlMappingRequest urlMappingRequest) {
-        UserResponse userResponse = urlService.addURL(urlMappingRequest);
-        return ResponseEntity.ok(userResponse);
+    public ResponseEntity<UrlResponse> addURL(@RequestBody UrlMappingRequest urlMappingRequest) {
+        UrlResponse urlResponse = urlService.addURL(urlMappingRequest);
+        return ResponseEntity.ok(urlResponse);
     }
 
     @DeleteMapping("/urls/{urlId}")
-    public ResponseEntity<UserResponse> deleteURL(@PathVariable Long urlId) {
-        UserResponse userResponse = urlService.deleteURL(urlId);
-        return ResponseEntity.ok(userResponse);
+    public ResponseEntity<UrlResponse> deleteURL(@PathVariable Long urlId) {
+        UrlResponse urlResponse = urlService.deleteURL(urlId);
+        return ResponseEntity.ok(urlResponse);
     }
 
     @PatchMapping("/urls/{urlId}")
-    public ResponseEntity<UserResponse> modifyURL(@PathVariable Long urlId, @RequestBody UrlMappingRequest urlMappingRequest) {
-        UserResponse userResponse = urlService.modifyURL(urlId, urlMappingRequest);
-        return ResponseEntity.ok(userResponse);
+    public ResponseEntity<UrlResponse> modifyURL(@PathVariable Long urlId, @RequestBody UrlMappingRequest urlMappingRequest) {
+        UrlResponse urlResponse = urlService.modifyURL(urlId, urlMappingRequest);
+        return ResponseEntity.ok(urlResponse);
     }
 }

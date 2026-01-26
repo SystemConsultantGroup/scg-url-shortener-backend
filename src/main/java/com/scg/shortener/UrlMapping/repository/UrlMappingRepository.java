@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface UrlMappingRepository extends JpaRepository<UrlMapping, Long> {
     Optional<UrlMapping> findBySlug(String slug);
     //List<UrlMapping> findAllById(Long id);
-    List<UrlMapping> findAllByUserId(@Param("userId") Long userId);
+    List<UrlMapping> findAllByUserId(Long userId);
 }
