@@ -1,0 +1,19 @@
+package com.scg.shortener.dto;
+
+import com.scg.shortener.User.entity.User;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+public class UserResponseDto {
+    private String nickname;
+    private String email;
+    private String picture;
+
+    public UserResponseDto(User entity) {
+        this.nickname = entity.getNickname();
+        this.email = entity.getEmail();
+        this.picture = entity.getPicture();
+    }
+}
