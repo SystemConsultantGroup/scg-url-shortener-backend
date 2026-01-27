@@ -1,4 +1,5 @@
 package com.scg.shortener.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
