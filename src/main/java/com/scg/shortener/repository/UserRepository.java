@@ -1,6 +1,6 @@
-package com.scg.shortener.domain.user;
+package com.scg.shortener.repository;
 
-import com.scg.shortener.User.entity.User;
+import com.scg.shortener.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

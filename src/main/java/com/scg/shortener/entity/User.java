@@ -1,4 +1,4 @@
-package com.scg.shortener.User.entity;
+package com.scg.shortener.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

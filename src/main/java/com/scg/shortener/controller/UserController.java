@@ -1,15 +1,14 @@
 package com.scg.shortener.controller;
 
 import com.scg.shortener.dto.UserResponseDto;
-import com.scg.shortener.User.entity.User;
-import com.scg.shortener.domain.user.UserRepository;
+import com.scg.shortener.entity.User;
+import com.scg.shortener.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor

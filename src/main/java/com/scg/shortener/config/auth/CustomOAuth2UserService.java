@@ -1,7 +1,7 @@
 package com.scg.shortener.config.auth;
 
-import com.scg.shortener.User.entity.User;
-import com.scg.shortener.domain.user.UserRepository;
+import com.scg.shortener.entity.User;
+import com.scg.shortener.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
