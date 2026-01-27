@@ -41,12 +41,11 @@ public class RedirectionController {
         analyticsService.track(slug, "true".equals(visited));
         ResponseCookie cookie = ResponseCookie.from("visited", "true")
                 .path("/" + slug)
-                .maxAge(Duration.ofDays(365))
+                .maxAge(Duration.ofDays(1))
                 .build();
-        // we use FOUND instead of MOVED_PERMANENTLY here to open up room for change
-        // responses with MOVED_PERMANENTLY are semi-permanently cached by the browser
-        return ResponseEntity.status(HttpStatus.FOUND)
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
                 .location(URI.create(targetUrl))
+                .header(HttpHeaders.CACHE_CONTROL, "max-age=90")
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
     }
