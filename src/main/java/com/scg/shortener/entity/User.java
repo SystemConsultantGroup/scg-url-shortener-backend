@@ -27,31 +27,18 @@ public class User {
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column
-    private String picture;
-
-    @Column
-    private String provider;
-
-    @Column
-    private String providerId;
-
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public User(String email, String nickname, String picture, String provider, String providerId) {
+    public User(String email, String nickname) {
         this.email = email;
         this.nickname = nickname;
-        this.picture = picture;
-        this.provider = provider;
-        this.providerId = providerId;
     }
 
-    public User update(String nickname, String picture) {
+    public User update(String nickname) {
         this.nickname = nickname;
-        this.picture = picture;
         return this;
     }
 }

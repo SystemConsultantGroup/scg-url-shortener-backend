@@ -28,11 +28,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String email = (String) attributes.get("email");
         String token = tokenProvider.createToken(email);
 
+        long maxAgeInSeconds = tokenProvider.getTokenValidityInMilliseconds() / 1000;
+
         ResponseCookie responseCookie = ResponseCookie.from("accessToken", token)
                 .path("/")
                 .httpOnly(true)
                 .secure(request.isSecure())
-                .maxAge(60 * 60 * 24)
+                .maxAge(maxAgeInSeconds)
                 .sameSite("Lax")
                 .build();
 

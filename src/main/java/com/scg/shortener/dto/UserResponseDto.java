@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
 public class UserResponseDto {
     private String nickname;
     private String email;
-    private String picture;
 
     public UserResponseDto(User entity) {
         this.nickname = entity.getNickname();
         this.email = entity.getEmail();
-        this.picture = entity.getPicture();
     }
 }

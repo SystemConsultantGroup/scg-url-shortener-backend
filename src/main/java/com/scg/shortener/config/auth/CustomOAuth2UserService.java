@@ -32,14 +32,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
-        String picture = (String) attributes.get("picture");
-        String providerId = (String) attributes.get("sub");
-        String provider = "google";
 
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
-        User user = saveOrUpdate(email, name, picture, provider, providerId);
+        User user = saveOrUpdate(email, name);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
@@ -47,15 +44,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 userNameAttributeName);
     }
 
-    private User saveOrUpdate(String email, String name, String picture, String provider, String providerId) {
+    private User saveOrUpdate(String email, String name) {
         User user = userRepository.findByEmail(email)
-                .map(entity -> entity.update(name, picture))
+                .map(entity -> entity.update(name))
                 .orElse(User.builder()
                         .nickname(name)
                         .email(email)
-                        .picture(picture)
-                        .provider(provider)
-                        .providerId(providerId)
                         .build());
 
         return userRepository.save(user);

@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import lombok.Getter;
 
 import java.security.Key;
 import java.util.Date;
@@ -16,6 +17,8 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final Key key;
+
+    @Getter
     private final long tokenValidityInMilliseconds;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secret,
