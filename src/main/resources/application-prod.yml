@@ -4,10 +4,10 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
-    open-in-view: false # OSIV 패턴 비활성화 (for lazy loading)
-    show-sql: false # hibernate console 미출력
+    open-in-view: false
+    show-sql: false
     hibernate:
-      ddl-auto: create # entity 확정 후 none 으로 변경 요망
+      ddl-auto: none
     properties:
       hibernate:
         default_batch_fetch_size: 15

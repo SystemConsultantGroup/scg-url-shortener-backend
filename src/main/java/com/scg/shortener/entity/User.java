@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(name = "users")
+@EntityListeners(AuditingEntityListener.class)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,5 +39,10 @@ public class User {
     public User(String email, String nickname) {
         this.email = email;
         this.nickname = nickname;
+    }
+
+    public User update(String nickname) {
+        this.nickname = nickname;
+        return this;
     }
 }
