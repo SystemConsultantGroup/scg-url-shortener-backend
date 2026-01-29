@@ -12,3 +12,5 @@ spring:
       hibernate:
         default_batch_fetch_size: 15
         dialect: org.hibernate.dialect.MySQLDialect
+app:
+  dashboard-url: https://shortener-prod.scg.skku.ac.kr/
