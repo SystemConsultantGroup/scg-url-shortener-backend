@@ -4,5 +4,5 @@ spring:
   profiles:
     default: dev
     group:
-      prod: common, prod, oauth
-      dev: common, dev, oauth
+      dev: "common,dev,oauth"
+      prod: "common,prod,oauth"
