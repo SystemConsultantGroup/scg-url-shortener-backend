@@ -1,8 +1,8 @@
-package com.scg.shortener.global.config.auth;
+package com.scg.shortener.config.auth;
 
-import com.scg.shortener.global.config.auth.jwt.JwtAuthenticationFilter;
-import com.scg.shortener.global.config.auth.jwt.JwtTokenProvider;
-import com.scg.shortener.global.config.auth.jwt.OAuth2SuccessHandler;
+import com.scg.shortener.config.auth.jwt.JwtAuthenticationFilter;
+import com.scg.shortener.config.auth.jwt.JwtTokenProvider;
+import com.scg.shortener.config.auth.jwt.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

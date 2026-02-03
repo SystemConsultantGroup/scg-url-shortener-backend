@@ -1,4 +1,4 @@
-package com.scg.shortener.global.config.auth;
+package com.scg.shortener.config.auth;
 
 import com.scg.shortener.entity.User;
 import com.scg.shortener.repository.UserRepository;
