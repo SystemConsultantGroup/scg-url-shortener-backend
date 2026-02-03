@@ -1,4 +1,4 @@
-package com.scg.shortener.config.auth.jwt;
+package com.scg.shortener.global.config.auth.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

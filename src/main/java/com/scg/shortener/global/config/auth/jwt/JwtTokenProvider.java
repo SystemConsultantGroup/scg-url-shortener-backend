@@ -1,4 +1,4 @@
-package com.scg.shortener.config.auth.jwt;
+package com.scg.shortener.global.config.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
