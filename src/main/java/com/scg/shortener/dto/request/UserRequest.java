@@ -1,4 +1,4 @@
-package com.scg.shortener.UrlMapping.dto.request;
+package com.scg.shortener.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,6 @@
-package com.scg.shortener.UrlMapping.repository;
+package com.scg.shortener.repository;
 
-import com.scg.shortener.UrlMapping.entity.UrlMapping;
+import com.scg.shortener.entity.UrlMapping;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

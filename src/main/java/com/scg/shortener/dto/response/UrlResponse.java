@@ -1,6 +1,6 @@
-package com.scg.shortener.UrlMapping.dto.response;
+package com.scg.shortener.dto.response;
 
-import com.scg.shortener.UrlMapping.dto.UrlMappingDto;
+import com.scg.shortener.dto.UrlMappingDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UrlResponse {
-    private Long id;
     private List<UrlMappingDto> urlMappings;
 }

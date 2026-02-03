@@ -1,8 +1,8 @@
-package com.scg.shortener.UrlMapping.controller;
+package com.scg.shortener.controller;
 
-import com.scg.shortener.UrlMapping.dto.request.UrlMappingRequest;
-import com.scg.shortener.UrlMapping.dto.response.UrlResponse;
-import com.scg.shortener.UrlMapping.service.UrlService;
+import com.scg.shortener.dto.request.UrlMappingRequest;
+import com.scg.shortener.dto.response.UrlResponse;
+import com.scg.shortener.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +14,10 @@ public class UrlController {
 
     @GetMapping("/urls")
     public ResponseEntity<UrlResponse> showURL() {
-        Long userId = 1L; // 추후 인증정보에서 가져올 예정
-        UrlResponse urlResponse = urlService.showURL(userId);
+        UrlResponse urlResponse = urlService.showURL();
+        if(urlResponse.getUrlMappings() == null) {
+            return ResponseEntity.status(401).build();
+        }
         return ResponseEntity.ok(urlResponse);
     }
 

@@ -1,6 +1,5 @@
-package com.scg.shortener.User.entity;
+package com.scg.shortener.entity;
 
-import com.scg.shortener.UrlMapping.entity.UrlMapping;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -37,5 +36,10 @@ public class User {
     public User(String email, String nickname) {
         this.email = email;
         this.nickname = nickname;
+    }
+
+    public User update(String nickname) {
+        this.nickname = nickname;
+        return this;
     }
 }
