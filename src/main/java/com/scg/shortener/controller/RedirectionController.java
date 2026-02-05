@@ -25,12 +25,13 @@ public class RedirectionController {
     @Value("${app.dashboard-url}")
     private String dashboardUrl;
 
-    @GetMapping("/")
-    public ResponseEntity<Void> redirectToDashboard() {
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(URI.create(dashboardUrl)).build();
-    }
+//    @GetMapping("/")
+//    public ResponseEntity<Void> redirectToDashboard() {
+//        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(URI.create(dashboardUrl)).build();
+//    }
 
-    @GetMapping("/{slug}")
+//    @GetMapping("/{slug}")
+    @GetMapping("/{slug:[^.]+}") //수정
     public ResponseEntity<Void> redirectToTarget(
             @PathVariable String slug,
             @CookieValue(name = "visited", defaultValue = "false") String visited) {

@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableCaching
 @EnableScheduling
 public class ScgUrlShortenerBackendApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(ScgUrlShortenerBackendApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ScgUrlShortenerBackendApplication.class, args);
+    }
 }

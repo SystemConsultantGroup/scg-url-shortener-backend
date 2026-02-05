@@ -34,7 +34,10 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/oauth2/**").permitAll()
+                        .requestMatchers(
+                                "/", //테스트용
+                                "/index.html", //테스트용
+                                "/auth/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
