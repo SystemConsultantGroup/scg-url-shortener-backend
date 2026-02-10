@@ -37,8 +37,10 @@ out/
 .vscode/
 
 ## configuration
+src/main/resources/application-qa.yml
 src/main/resources/application-dev.yml
 src/main/resources/application-local.yml
+src/main/resources/application-oauth.yml
 
 ## nix flake
 flake.nix
