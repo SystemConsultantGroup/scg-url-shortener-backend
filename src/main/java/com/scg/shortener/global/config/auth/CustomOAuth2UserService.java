@@ -1,4 +1,4 @@
-package com.scg.shortener.config.auth;
+package com.scg.shortener.global.config.auth;
 
 import com.scg.shortener.entity.User;
 import com.scg.shortener.repository.UserRepository;
@@ -36,7 +36,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
-        User user = saveOrUpdate(email, name);
+        saveOrUpdate(email, name);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),

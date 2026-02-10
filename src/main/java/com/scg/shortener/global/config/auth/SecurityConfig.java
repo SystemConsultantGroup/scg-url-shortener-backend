@@ -1,8 +1,8 @@
-package com.scg.shortener.config.auth;
+package com.scg.shortener.global.config.auth;
 
-import com.scg.shortener.config.auth.jwt.JwtAuthenticationFilter;
-import com.scg.shortener.config.auth.jwt.JwtTokenProvider;
-import com.scg.shortener.config.auth.jwt.OAuth2SuccessHandler;
+import com.scg.shortener.global.config.auth.jwt.JwtAuthenticationFilter;
+import com.scg.shortener.global.config.auth.jwt.JwtTokenProvider;
+import com.scg.shortener.global.config.auth.jwt.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +34,10 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/oauth2/**").permitAll()
+                        .requestMatchers(
+                                "/", //테스트용
+                                "/index.html", //테스트용
+                                "/auth/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
