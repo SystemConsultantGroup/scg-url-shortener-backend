@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,6 +18,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+    @Value("${app.dashboard-url}")
+    private String dashboardUrl;
 
     private final JwtTokenProvider tokenProvider;
 
@@ -39,6 +42,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-        getRedirectStrategy().sendRedirect(request, response, "http://localhost:8000");
+        getRedirectStrategy().sendRedirect(request, response, dashboardUrl);
     }
 }
