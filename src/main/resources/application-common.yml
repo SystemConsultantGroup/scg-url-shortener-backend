@@ -27,4 +27,4 @@ jwt:
   secret: "${JWT_SECRET}"
   expiration: 86400000
 app:
-  dashboard-url: "https://app.shortener-qa.scg.skku.ac.kr/"
+  dashboard-url: "https://app.shortener-qa.scg.skku.ac.kr/dashboard"

@@ -4,4 +4,4 @@ spring:
     hibernate:
       ddl-auto: none
 app:
-  dashboard-url: "https://app.shortener-prod.scg.skku.ac.kr/"
+  dashboard-url: "https://app.shortener-prod.scg.skku.ac.kr/dashboard"
