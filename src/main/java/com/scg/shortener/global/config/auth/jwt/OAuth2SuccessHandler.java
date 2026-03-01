@@ -36,9 +36,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         ResponseCookie responseCookie = ResponseCookie.from("accessToken", token)
                 .path("/")
                 .httpOnly(true)
-                .secure(request.isSecure())
+                .secure(true)
                 .maxAge(maxAgeInSeconds)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
