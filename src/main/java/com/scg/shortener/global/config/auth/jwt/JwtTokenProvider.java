@@ -1,15 +1,20 @@
 package com.scg.shortener.global.config.auth.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import lombok.Getter;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -23,7 +28,7 @@ public class JwtTokenProvider {
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secret,
                             @Value("${jwt.expiration}") long tokenValidityInMilliseconds) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.tokenValidityInMilliseconds = tokenValidityInMilliseconds;
     }
 
@@ -48,12 +53,20 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public boolean validateToken(String token) {
+    public TokenValidationResult validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            return false;
+            return TokenValidationResult.valid();
+        } catch (ExpiredJwtException e) {
+            return TokenValidationResult.invalid("Token has expired");
+        } catch (SignatureException e) {
+            return TokenValidationResult.invalid("Invalid token signature");
+        } catch (MalformedJwtException e) {
+            return TokenValidationResult.invalid("Malformed token");
+        } catch (UnsupportedJwtException e) {
+            return TokenValidationResult.invalid("Unsupported token");
+        } catch (IllegalArgumentException e) {
+            return TokenValidationResult.invalid("Token is empty or null");
         }
     }
 
@@ -67,5 +80,31 @@ public class JwtTokenProvider {
             }
         }
         return null;
+    }
+
+    public static class TokenValidationResult {
+        private final boolean valid;
+        private final String errorMessage;
+
+        private TokenValidationResult(boolean valid, String errorMessage) {
+            this.valid = valid;
+            this.errorMessage = errorMessage;
+        }
+
+        public static TokenValidationResult valid() {
+            return new TokenValidationResult(true, null);
+        }
+
+        public static TokenValidationResult invalid(String errorMessage) {
+            return new TokenValidationResult(false, errorMessage);
+        }
+
+        public boolean isValid() {
+            return valid;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
     }
 }
