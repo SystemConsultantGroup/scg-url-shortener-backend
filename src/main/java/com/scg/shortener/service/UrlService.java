@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,16 +70,18 @@ public class UrlService {
         return new CreateUrlResponse(urlMapping.getId(), "https://scg.sh/" + urlMapping.getSlug(), urlMapping.getCreatedAt());
     }
 
-    public CreateUrlResponse deleteURL(Long urlId) {
+    public void deleteURL(Long urlId) {
         urlMappingRepository.deleteById(urlId);
-        return new CreateUrlResponse(null, null, null);
     }
 
     public UpdateUrlResponse modifyURL(long urlId, UpdateUrlRequest updateUrlRequest) {
         UrlMapping urlMapping = urlMappingRepository.findById(urlId).orElseThrow(
                 () -> new BadRequestException(ExceptionCode.NOT_FOUND_URL_ID));
+        if(urlMappingRepository.existsBySlug(updateUrlRequest.getSlug())) {
+            throw new BadRequestException(ExceptionCode.ALREADY_EXISTS_SLUG);
+        }
         urlMapping.updateTargetUrl(updateUrlRequest.getTargetUrl());
         urlMapping.updateSlug(updateUrlRequest.getSlug());
-        return new UpdateUrlResponse(urlId, "https://scg.sh/" + updateUrlRequest.getSlug(), urlMapping.getUpdatedAt());
+        return new UpdateUrlResponse(urlId, "https://scg.sh/" + updateUrlRequest.getSlug(), LocalDateTime.now());
     }
 }

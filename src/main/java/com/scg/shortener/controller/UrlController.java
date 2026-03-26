@@ -33,9 +33,9 @@ public class UrlController {
     }
 
     @DeleteMapping("/urls/{urlId}")
-    public ResponseEntity<CreateUrlResponse> deleteURL(@PathVariable Long urlId) {
-        CreateUrlResponse createUrlResponse = urlService.deleteURL(urlId);
-        return ResponseEntity.ok(createUrlResponse);
+    public ResponseEntity<Void> deleteURL(@PathVariable Long urlId) {
+        urlService.deleteURL(urlId);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/urls/{urlId}")
