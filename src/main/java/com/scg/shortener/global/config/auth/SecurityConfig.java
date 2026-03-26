@@ -37,7 +37,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/", //테스트용
                                 "/index.html", //테스트용
-                                "/auth/**", "/oauth2/**").permitAll()
+                                "/auth/**", "/oauth2/**",
+                                "/api/v1/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

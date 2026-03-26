@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UrlMappingRequest {
+public class UpdateUrlRequest {
     private String targetUrl;
     private String slug;
 }

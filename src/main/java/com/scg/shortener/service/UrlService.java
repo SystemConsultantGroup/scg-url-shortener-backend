@@ -1,12 +1,14 @@
 package com.scg.shortener.service;
 
-import com.scg.shortener.dto.UrlMappingDto;
+import com.scg.shortener.dto.UrlSummary;
+import com.scg.shortener.dto.request.UpdateUrlRequest;
+import com.scg.shortener.dto.response.UpdateUrlResponse;
 import com.scg.shortener.entity.UrlMapping;
 import com.scg.shortener.entity.User;
 import com.scg.shortener.global.BadRequestException;
 import com.scg.shortener.global.ExceptionCode;
 import com.scg.shortener.dto.request.UrlMappingRequest;
-import com.scg.shortener.dto.response.UrlResponse;
+import com.scg.shortener.dto.response.CreateUrlResponse;
 import com.scg.shortener.repository.UrlMappingRepository;
 import com.scg.shortener.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +28,10 @@ public class UrlService {
     private final UrlMappingRepository urlMappingRepository;
     private final UserRepository userRepository;
 
-    public UrlResponse showURL() {
+    public List<UrlSummary> showURL() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
-            return new UrlResponse(null);
+            return null;
         }
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
@@ -39,16 +41,16 @@ public class UrlService {
 
         Long userId = user.getId();
         List<UrlMapping> urlMappings = urlMappingRepository.findAllByUserId(userId);
-        List<UrlMappingDto> urlMappingDto = urlMappings.stream()
-                .map(m -> new UrlMappingDto(m.getSlug(), m.getTargetUrl(), m.getCreatedAt(), m.getUpdatedAt()))
+        List<UrlSummary> urlSummary = urlMappings.stream()
+                .map(m -> new UrlSummary(m.getId(), m.getSlug(), m.getTargetUrl(), 0, m.getCreatedAt()))
                 .collect(Collectors.toList());
-        return new UrlResponse(urlMappingDto);
+        return urlSummary;
     }
 
-    public UrlResponse addURL(UrlMappingRequest urlMappingRequest) {
+    public CreateUrlResponse addURL(UrlMappingRequest urlMappingRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
-            return new UrlResponse(null);
+            throw new BadRequestException(ExceptionCode.NOT_FOUND_USER_ID);
         }
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
@@ -57,22 +59,26 @@ public class UrlService {
                 .orElseThrow(() -> new BadRequestException(ExceptionCode.NOT_FOUND_USER_EMAIL));
 
         String slug = urlMappingRequest.getSlug();
+
+        if(urlMappingRepository.existsBySlug(slug)) {
+            throw new BadRequestException(ExceptionCode.ALREADY_EXISTS_SLUG);
+        }
         String targetUrl = urlMappingRequest.getTargetUrl();
         UrlMapping urlMapping = new UrlMapping(user, slug, targetUrl);
         urlMappingRepository.save(urlMapping);
-        return new UrlResponse(null);
+        return new CreateUrlResponse(urlMapping.getId(), "https://scg.sh/" + urlMapping.getSlug(), urlMapping.getCreatedAt());
     }
 
-    public UrlResponse deleteURL(Long urlId) {
+    public CreateUrlResponse deleteURL(Long urlId) {
         urlMappingRepository.deleteById(urlId);
-        return new UrlResponse(null);
+        return new CreateUrlResponse(null, null, null);
     }
 
-    public UrlResponse modifyURL(long urlId, UrlMappingRequest urlMappingRequest) {
+    public UpdateUrlResponse modifyURL(long urlId, UpdateUrlRequest updateUrlRequest) {
         UrlMapping urlMapping = urlMappingRepository.findById(urlId).orElseThrow(
                 () -> new BadRequestException(ExceptionCode.NOT_FOUND_URL_ID));
-        urlMapping.updateTargetUrl(urlMappingRequest.getTargetUrl());
-        urlMapping.updateSlug(urlMappingRequest.getSlug());
-        return new UrlResponse(null);
+        urlMapping.updateTargetUrl(updateUrlRequest.getTargetUrl());
+        urlMapping.updateSlug(updateUrlRequest.getSlug());
+        return new UpdateUrlResponse(urlId, "https://scg.sh/" + updateUrlRequest.getSlug(), urlMapping.getUpdatedAt());
     }
 }

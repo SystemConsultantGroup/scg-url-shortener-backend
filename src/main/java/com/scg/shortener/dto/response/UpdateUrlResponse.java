@@ -1,15 +1,16 @@
 package com.scg.shortener.dto.response;
 
-import com.scg.shortener.dto.UrlMappingDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UrlResponse {
-    private List<UrlMappingDto> urlMappings;
+public class UpdateUrlResponse {
+    private Long urlId;
+    private String shortenedUrl;
+    private LocalDateTime updateAt;
 }
