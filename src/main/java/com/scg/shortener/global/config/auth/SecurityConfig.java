@@ -34,11 +34,13 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/urls/**").authenticated()
+                        .requestMatchers("/api/v1/user").authenticated()
                         .requestMatchers(
                                 "/", //테스트용
                                 "/index.html", //테스트용
                                 "/auth/**", "/oauth2/**",
-                                "/api/v1/**").permitAll()
+                                "/api/v1/{slug:[a-zA-Z0-9]+}").permitAll()
                         .anyRequest().authenticated()
                 )
 
