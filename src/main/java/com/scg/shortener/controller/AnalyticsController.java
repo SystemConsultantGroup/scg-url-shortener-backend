@@ -2,12 +2,13 @@ package com.scg.shortener.controller;
 
 import com.scg.shortener.dto.AnalyticsResponse;
 import com.scg.shortener.entity.UrlMapping;
-import com.scg.shortener.repository.UrlMappingRepositry;
+import com.scg.shortener.repository.UrlMappingRepository;
 import com.scg.shortener.service.AnalyticsService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,8 +21,9 @@ import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class AnalyticsController {
-    private final UrlMappingRepositry urlMappingRepositry;
+    private final UrlMappingRepository urlMappingRepositry;
     private final AnalyticsService analyticsService;
 
     @Transactional

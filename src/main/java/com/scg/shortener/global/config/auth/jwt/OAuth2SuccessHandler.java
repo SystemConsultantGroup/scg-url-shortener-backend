@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+    @Value("${app.dashboard-url}")
+    private String dashboardUrl;
 
     private final JwtTokenProvider tokenProvider;
 
@@ -39,6 +42,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-        getRedirectStrategy().sendRedirect(request, response, "http://localhost:8000");
+        getRedirectStrategy().sendRedirect(request, response, dashboardUrl);
     }
 }

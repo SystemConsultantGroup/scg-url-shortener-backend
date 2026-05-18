@@ -12,5 +12,5 @@ import java.time.LocalDateTime;
 public class CreateUrlResponse {
     private Long urlId;
     private String shortUrl;
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 }

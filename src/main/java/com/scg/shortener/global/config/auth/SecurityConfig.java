@@ -6,8 +6,10 @@ import com.scg.shortener.global.config.auth.jwt.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @RequiredArgsConstructor
 @EnableWebSecurity
+@EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 
@@ -34,14 +37,7 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/urls/**").authenticated()
-                        .requestMatchers("/api/v1/user").authenticated()
-                        .requestMatchers(
-                                "/", //테스트용
-                                "/index.html", //테스트용
-                                "/auth/**", "/oauth2/**",
-                                "/api/v1/{slug:[a-zA-Z0-9]+}").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
 
                 .oauth2Login(oauth2 -> oauth2

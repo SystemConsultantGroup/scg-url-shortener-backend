@@ -5,16 +5,15 @@ import com.scg.shortener.dto.request.UpdateUrlRequest;
 import com.scg.shortener.dto.response.UpdateUrlResponse;
 import com.scg.shortener.entity.UrlMapping;
 import com.scg.shortener.entity.User;
-import com.scg.shortener.global.BadRequestException;
+import com.scg.shortener.global.CustomException;
 import com.scg.shortener.global.ExceptionCode;
 import com.scg.shortener.dto.request.UrlMappingRequest;
 import com.scg.shortener.dto.response.CreateUrlResponse;
 import com.scg.shortener.repository.UrlMappingRepository;
 import com.scg.shortener.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,19 +25,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class UrlService {
+    @Value("${app.slug-base-url}")
+    private String slugBaseUrl;
+
     private final UrlMappingRepository urlMappingRepository;
     private final UserRepository userRepository;
 
-    public List<UrlSummary> showURL() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
-            return null;
-        }
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-
+    public List<UrlSummary> showURL(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BadRequestException(ExceptionCode.NOT_FOUND_USER_EMAIL));
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER_EMAIL));
 
         Long userId = user.getId();
         List<UrlMapping> urlMappings = urlMappingRepository.findAllByUserId(userId);
@@ -48,40 +43,54 @@ public class UrlService {
         return urlSummary;
     }
 
-    public CreateUrlResponse addURL(UrlMappingRequest urlMappingRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
-            throw new BadRequestException(ExceptionCode.NOT_FOUND_USER_ID);
-        }
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-
+    public CreateUrlResponse addURL(UrlMappingRequest urlMappingRequest, String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BadRequestException(ExceptionCode.NOT_FOUND_USER_EMAIL));
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER_EMAIL));
 
         String slug = urlMappingRequest.getSlug();
 
         if(urlMappingRepository.existsBySlug(slug)) {
-            throw new BadRequestException(ExceptionCode.ALREADY_EXISTS_SLUG);
+            throw new CustomException(ExceptionCode.ALREADY_EXISTS_SLUG);
         }
         String targetUrl = urlMappingRequest.getTargetUrl();
         UrlMapping urlMapping = new UrlMapping(user, slug, targetUrl);
         urlMappingRepository.save(urlMapping);
-        return new CreateUrlResponse(urlMapping.getId(), "https://scg.sh/" + urlMapping.getSlug(), urlMapping.getCreatedAt());
+        return new CreateUrlResponse(urlMapping.getId(), slugBaseUrl + urlMapping.getSlug(), urlMapping.getCreatedAt());
     }
 
-    public void deleteURL(Long urlId) {
-        urlMappingRepository.deleteById(urlId);
-    }
+    public void deleteURL(Long urlId, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER_EMAIL));
 
-    public UpdateUrlResponse modifyURL(long urlId, UpdateUrlRequest updateUrlRequest) {
-        UrlMapping urlMapping = urlMappingRepository.findById(urlId).orElseThrow(
-                () -> new BadRequestException(ExceptionCode.NOT_FOUND_URL_ID));
-        if(urlMappingRepository.existsBySlug(updateUrlRequest.getSlug())) {
-            throw new BadRequestException(ExceptionCode.ALREADY_EXISTS_SLUG);
+        UrlMapping urlMapping = urlMappingRepository.findById(urlId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_URL_ID));
+
+        if(!urlMapping.getUser().getEmail().equals(user.getEmail())) {
+            throw new CustomException(ExceptionCode.NO_PERMISSION);
         }
-        urlMapping.updateTargetUrl(updateUrlRequest.getTargetUrl());
-        urlMapping.updateSlug(updateUrlRequest.getSlug());
-        return new UpdateUrlResponse(urlId, "https://scg.sh/" + updateUrlRequest.getSlug(), LocalDateTime.now());
+
+        urlMappingRepository.delete(urlMapping);
+    }
+
+    public UpdateUrlResponse modifyURL(long urlId, UpdateUrlRequest updateUrlRequest, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER_EMAIL));
+
+        UrlMapping urlMapping = urlMappingRepository.findById(urlId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_URL_ID));
+
+        if(!urlMapping.getUser().getEmail().equals(user.getEmail())) {
+            throw new CustomException(ExceptionCode.NO_PERMISSION);
+        }
+
+        if(urlMappingRepository.existsBySlugAndIdNot(updateUrlRequest.getSlug(), urlId)) {
+            throw new CustomException(ExceptionCode.ALREADY_EXISTS_SLUG);
+        }
+
+        if(updateUrlRequest.getTargetUrl() != null)
+            urlMapping.updateTargetUrl(updateUrlRequest.getTargetUrl());
+        if(updateUrlRequest.getSlug() != null)
+            urlMapping.updateSlug(updateUrlRequest.getSlug());
+        return new UpdateUrlResponse(urlId, slugBaseUrl + updateUrlRequest.getSlug(), LocalDateTime.now());
     }
 }
