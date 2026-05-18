@@ -31,4 +31,4 @@ app:
   api-base-url: "https://${app.api-base-domain}"
   slug-base-domain: "shortener-qa.scg.skku.ac.kr"
   slug-base-url: "https://${app.slug-base-domain}"
-  dashboard-url: "https://app.shortner-qa.scg.skku.ac.kr//dashboard"
+  dashboard-url: "https://app.shortner-qa.scg.skku.ac.kr/dashboard"

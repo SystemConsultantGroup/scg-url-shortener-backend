@@ -3,6 +3,8 @@ package com.scg.shortener.global.config.auth;
 import com.scg.shortener.global.config.auth.jwt.JwtAuthenticationFilter;
 import com.scg.shortener.global.config.auth.jwt.JwtTokenProvider;
 import com.scg.shortener.global.config.auth.jwt.OAuth2SuccessHandler;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +14,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -36,6 +43,10 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(new JsonAuthenticationEntryPoint())
+                )
+
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
                 )
@@ -53,5 +64,15 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    private static class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
+        @Override
+        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write("{\"error\":\"Authentication required\"}");
+        }
     }
 }
