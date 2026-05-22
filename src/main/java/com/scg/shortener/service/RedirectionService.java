@@ -1,7 +1,7 @@
 package com.scg.shortener.service;
 
 import com.scg.shortener.entity.UrlMapping;
-import com.scg.shortener.repository.UrlMappingRepositry;
+import com.scg.shortener.repository.UrlMappingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RedirectionService {
-    private final UrlMappingRepositry urlRepository;
+    private final UrlMappingRepository urlRepository;
 
     // todo: add cache eviction in the create, update, delete endpoints
     @Cacheable(value = "urls", key = "#slug")

@@ -6,8 +6,8 @@ import com.scg.shortener.dto.AnalyticsResponse.HourlyStat;
 import com.scg.shortener.entity.Analytics;
 import com.scg.shortener.entity.UrlMapping;
 import com.scg.shortener.repository.AnalyticsRepository;
-import com.scg.shortener.repository.UrlMappingRepositry;
 
+import com.scg.shortener.repository.UrlMappingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AnalyticsService {
     private final AnalyticsRepository analyticsRepository;
-    private final UrlMappingRepositry urlMappingRepositry;
+    private final UrlMappingRepository urlMappingRepository;
     // k: slug
     // v: high 32 bits = unique visit count, low 32 bits = visit count
     private final AtomicReference<Map<String, AtomicLong>> state = new AtomicReference<>(new ConcurrentHashMap<>());
@@ -53,7 +53,7 @@ public class AnalyticsService {
             int visitCount = (int) (data & 0xFFFFFFFFL);
             int uniqueVisitCount = (int) (data >> 32);
             try {
-                long slugId = urlMappingRepositry.findBySlug(slug).orElseThrow().getId();
+                long slugId = urlMappingRepository.findBySlug(slug).orElseThrow().getId();
                 analyticsRepository.upsert(slugId, hour, visitCount, uniqueVisitCount);
             } catch (Exception e) {
                 log.error("Failed to flush analytics for slug: {}", slug, e);
@@ -62,7 +62,7 @@ public class AnalyticsService {
     }
 
     public AnalyticsResponse getAnalyticsResponse(String slug) {
-        UrlMapping urlMapping = urlMappingRepositry.findBySlug(slug).orElseThrow();
+        UrlMapping urlMapping = urlMappingRepository.findBySlug(slug).orElseThrow();
         List<Analytics> analytics = analyticsRepository.findBySlug(urlMapping);
 
         long totalClicks = analytics.stream().mapToLong(Analytics::getVisitCount).sum();
@@ -100,7 +100,7 @@ public class AnalyticsService {
     }
 
     public List<int[]> getAnalytics(String slug, int start, int end) {
-        UrlMapping urlMapping = urlMappingRepositry.findBySlug(slug).orElseThrow();
+        UrlMapping urlMapping = urlMappingRepository.findBySlug(slug).orElseThrow();
         List<Analytics> raw = analyticsRepository.findBySlug(urlMapping);
         List<int[]> result = new ArrayList<>(raw.size() + 1);
         for (Analytics a : raw) {

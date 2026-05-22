@@ -9,9 +9,10 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UrlMappingDto {
+public class UrlSummary {
+    private Long urlId;
     private String slug;
     private String targetUrl;
+    private long totalClicks = 0;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
