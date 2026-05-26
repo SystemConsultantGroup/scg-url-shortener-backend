@@ -32,3 +32,5 @@ app:
   slug-base-domain: "shortener-qa.scg.skku.ac.kr"
   slug-base-url: "https://${app.slug-base-domain}"
   dashboard-url: "https://app.shortener-qa.scg.skku.ac.kr/dashboard"
+  allowed-origins:
+    - "https://app.shortener-qa.scg.skku.ac.kr"
