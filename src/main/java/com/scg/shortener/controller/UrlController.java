@@ -17,15 +17,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(headers = "Host=${app.api-base-domain}")
+@RequestMapping(headers = "Host=${app.app-base-domain}")
 @PreAuthorize("isAuthenticated()")
 public class UrlController {
     private final UrlService urlService;
 
     @GetMapping("/urls")
     public ResponseEntity<List<UrlSummary>> showURL(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
+            @AuthenticationPrincipal UserDetails userDetails) {
         List<UrlSummary> urlResponse = urlService.showURL(userDetails.getUsername());
         return ResponseEntity.ok(urlResponse);
     }
@@ -33,8 +32,7 @@ public class UrlController {
     @PostMapping("/urls")
     public ResponseEntity<CreateUrlResponse> addURL(
             @RequestBody UrlMappingRequest urlMappingRequest,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
+            @AuthenticationPrincipal UserDetails userDetails) {
         CreateUrlResponse createUrlResponse = urlService.addURL(urlMappingRequest, userDetails.getUsername());
         return ResponseEntity.ok(createUrlResponse);
     }
@@ -42,8 +40,7 @@ public class UrlController {
     @DeleteMapping("/urls/{urlId}")
     public ResponseEntity<Void> deleteURL(
             @PathVariable Long urlId,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
+            @AuthenticationPrincipal UserDetails userDetails) {
         urlService.deleteURL(urlId, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
@@ -52,8 +49,7 @@ public class UrlController {
     public ResponseEntity<UpdateUrlResponse> modifyURL(
             @PathVariable Long urlId,
             @RequestBody UpdateUrlRequest updateUrlRequest,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
+            @AuthenticationPrincipal UserDetails userDetails) {
         UpdateUrlResponse updateUrlResponse = urlService.modifyURL(urlId, updateUrlRequest, userDetails.getUsername());
         return ResponseEntity.ok(updateUrlResponse);
     }

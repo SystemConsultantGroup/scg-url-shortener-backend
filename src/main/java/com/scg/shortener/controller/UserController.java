@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(headers = "Host=${app.api-base-domain}")
+@RequestMapping(headers = "Host=${app.app-base-domain}")
 @PreAuthorize("isAuthenticated()")
 public class UserController {
     private final UserRepository userRepository;
