@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.Duration;
+import com.scg.shortener.global.config.routing.DynamicHostRoute;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(headers = "Host=${app.slug-base-domain}")
+@DynamicHostRoute("app.slug-base-domain")
 public class RedirectionController {
     private final RedirectionService redirectionService;
     private final AnalyticsService analyticsService;
@@ -28,7 +29,7 @@ public class RedirectionController {
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(URI.create(dashboardUrl)).build();
     }
 
-    @GetMapping("/{slug:[^.]+}") //수정
+    @GetMapping("/{slug:[^.]+}") // 수정
     public ResponseEntity<Void> redirectToTarget(
             @PathVariable String slug,
             @CookieValue(name = "visited", defaultValue = "false") String visited) {

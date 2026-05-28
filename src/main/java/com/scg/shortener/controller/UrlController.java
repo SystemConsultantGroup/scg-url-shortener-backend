@@ -14,17 +14,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.scg.shortener.global.config.routing.DynamicHostRoute;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(headers = "Host=${app.app-base-domain}")
+@DynamicHostRoute("app.api-base-domain")
 @PreAuthorize("isAuthenticated()")
 public class UrlController {
     private final UrlService urlService;
 
     @GetMapping("/urls")
     public ResponseEntity<List<UrlSummary>> showURL(
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         List<UrlSummary> urlResponse = urlService.showURL(userDetails.getUsername());
         return ResponseEntity.ok(urlResponse);
     }
