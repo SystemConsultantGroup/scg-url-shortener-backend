@@ -1,5 +1,6 @@
 package com.scg.shortener.global.config.auth;
 
+import com.scg.shortener.global.config.AppProperties;
 import com.scg.shortener.global.config.auth.jwt.JwtAuthenticationFilter;
 import com.scg.shortener.global.config.auth.jwt.JwtTokenProvider;
 import com.scg.shortener.global.config.auth.jwt.OAuth2SuccessHandler;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -33,13 +35,13 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @Configuration
-@ConfigurationProperties(prefix = "app")
+@EnableConfigurationProperties(AppProperties.class) // 중요: 이 설정을 활성화해야 함
 public class SecurityConfig {
 
-        private List<String> allowedOrigins;
+        private final AppProperties appProperties;
 
-        public void setAllowedOrigins(List<String> allowedOrigins) {
-                this.allowedOrigins = allowedOrigins;
+        public void configureSecurity() {
+                List<String> origins = appProperties.allowedOrigins();
         }
 
         private final CustomOAuth2UserService customOAuth2UserService;
@@ -80,7 +82,7 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.setAllowCredentials(true);
-                configuration.setAllowedOrigins(allowedOrigins);
+                configuration.setAllowedOrigins(appProperties.allowedOrigins());
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(List.of("*"));
                 configuration.setMaxAge(3600L);

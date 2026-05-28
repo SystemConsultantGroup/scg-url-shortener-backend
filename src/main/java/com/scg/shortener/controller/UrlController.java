@@ -1,9 +1,11 @@
 package com.scg.shortener.controller;
 
 import com.scg.shortener.dto.UrlSummary;
+import com.scg.shortener.dto.request.GetUrlsRequest;
 import com.scg.shortener.dto.request.UpdateUrlRequest;
 import com.scg.shortener.dto.request.UrlMappingRequest;
 import com.scg.shortener.dto.response.CreateUrlResponse;
+import com.scg.shortener.dto.response.GetUrlsResponse;
 import com.scg.shortener.dto.response.UpdateUrlResponse;
 import com.scg.shortener.service.UrlService;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +26,11 @@ public class UrlController {
     private final UrlService urlService;
 
     @GetMapping("/urls")
-    public ResponseEntity<List<UrlSummary>> showURL(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        List<UrlSummary> urlResponse = urlService.showURL(userDetails.getUsername());
-        return ResponseEntity.ok(urlResponse);
+    public ResponseEntity<GetUrlsResponse> showURL(
+            GetUrlsRequest getUrlsRequest,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        GetUrlsResponse getUrlsResponse = urlService.showURL(getUrlsRequest, userDetails.getUsername());
+        return ResponseEntity.ok(getUrlsResponse);
     }
 
     @PostMapping("/urls")
