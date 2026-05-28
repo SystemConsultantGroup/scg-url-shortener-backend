@@ -1,7 +1,9 @@
 package com.scg.shortener.service;
 
 import com.scg.shortener.dto.UrlSummary;
+import com.scg.shortener.dto.request.GetUrlsRequest;
 import com.scg.shortener.dto.request.UpdateUrlRequest;
+import com.scg.shortener.dto.response.GetUrlsResponse;
 import com.scg.shortener.dto.response.UpdateUrlResponse;
 import com.scg.shortener.entity.UrlMapping;
 import com.scg.shortener.entity.User;
@@ -13,6 +15,10 @@ import com.scg.shortener.repository.UrlMappingRepository;
 import com.scg.shortener.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,16 +37,23 @@ public class UrlService {
     private final UrlMappingRepository urlMappingRepository;
     private final UserRepository userRepository;
 
-    public List<UrlSummary> showURL(String email) {
+    public GetUrlsResponse showURL(GetUrlsRequest getUrlsRequest, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER_EMAIL));
 
         Long userId = user.getId();
-        List<UrlMapping> urlMappings = urlMappingRepository.findAllByUserId(userId);
-        List<UrlSummary> urlSummary = urlMappings.stream()
+        Sort sort = switch (getUrlsRequest.getSort()) {
+            case NEWEST -> Sort.by(Sort.Direction.DESC, "createdAt");
+            case OLDEST -> Sort.by(Sort.Direction.DESC, "createdAt");
+            case MOST_CLICKS -> Sort.by(Sort.Direction.ASC, "totalClicks");
+            case LEAST_CLICKS -> Sort.by(Sort.Direction.DESC, "totalClicks");
+        };
+        Pageable pageable = PageRequest.of(getUrlsRequest.getPage().intValue() - 1, getUrlsRequest.getLimit().intValue(), sort);
+        Page<UrlMapping> urlMappingsPage = urlMappingRepository.findAllByUserId(userId, pageable);
+        List<UrlSummary> urlSummary = urlMappingsPage.stream()
                 .map(m -> new UrlSummary(m.getId(), m.getSlug(), m.getTargetUrl(), 0, m.getCreatedAt()))
-                .collect(Collectors.toList());
-        return urlSummary;
+                .toList();
+        return GetUrlsResponse.of(urlMappingsPage, urlSummary);
     }
 
     public CreateUrlResponse addURL(UrlMappingRequest urlMappingRequest, String email) {
