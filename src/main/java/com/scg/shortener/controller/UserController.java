@@ -12,10 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.scg.shortener.global.config.routing.DynamicHostRoute;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(headers = "Host=${app.api-base-domain}")
+@DynamicHostRoute("app.api-base-domain")
 @PreAuthorize("isAuthenticated()")
 public class UserController {
     private final UserRepository userRepository;
