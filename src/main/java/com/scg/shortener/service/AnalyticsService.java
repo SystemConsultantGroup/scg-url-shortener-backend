@@ -1,18 +1,5 @@
 package com.scg.shortener.service;
 
-import com.scg.shortener.dto.AnalyticsResponse;
-import com.scg.shortener.dto.AnalyticsResponse.DailyStat;
-import com.scg.shortener.dto.AnalyticsResponse.HourlyStat;
-import com.scg.shortener.entity.Analytics;
-import com.scg.shortener.entity.UrlMapping;
-import com.scg.shortener.repository.AnalyticsRepository;
-
-import com.scg.shortener.repository.UrlMappingRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -26,6 +13,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import com.scg.shortener.dto.response.GetAnalyticsResponse;
+import com.scg.shortener.dto.response.GetAnalyticsResponse.DailyStat;
+import com.scg.shortener.dto.response.GetAnalyticsResponse.HourlyStat;
+import com.scg.shortener.entity.Analytics;
+import com.scg.shortener.entity.UrlMapping;
+import com.scg.shortener.repository.AnalyticsRepository;
+import com.scg.shortener.repository.UrlMappingRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -55,17 +56,22 @@ public class AnalyticsService {
             try {
                 long slugId = urlMappingRepository.findBySlug(slug).orElseThrow().getId();
                 analyticsRepository.upsert(slugId, hour, visitCount, uniqueVisitCount);
+                urlMappingRepository.incrementVisitCounts(slugId, visitCount, uniqueVisitCount);
             } catch (Exception e) {
                 log.error("Failed to flush analytics for slug: {}", slug, e);
             }
         });
     }
 
-    public AnalyticsResponse getAnalyticsResponse(String slug) {
+    public GetAnalyticsResponse getAnalyticsResponse(String slug) {
         UrlMapping urlMapping = urlMappingRepository.findBySlug(slug).orElseThrow();
         List<Analytics> analytics = analyticsRepository.findBySlug(urlMapping);
 
-        long totalClicks = analytics.stream().mapToLong(Analytics::getVisitCount).sum();
+        long totalClicks = urlMapping.getTotalVisitCount();
+        AtomicLong val = state.get().get(slug);
+        if (val != null) {
+            totalClicks += (int) (val.get() & 0xFFFFFFFFL);
+        }
 
         List<HourlyStat> hourlyStats = analytics.stream().map(a -> {
             LocalDateTime time = LocalDateTime.ofInstant(
@@ -96,7 +102,7 @@ public class AnalyticsService {
                 .sorted(Comparator.comparing(DailyStat::date))
                 .collect(Collectors.toList());
 
-        return new AnalyticsResponse(totalClicks, hourlyStats, dailyStats);
+        return new GetAnalyticsResponse(totalClicks, hourlyStats, dailyStats);
     }
 
     public List<int[]> getAnalytics(String slug, int start, int end) {

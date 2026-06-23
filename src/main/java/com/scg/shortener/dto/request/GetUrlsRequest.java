@@ -1,12 +1,11 @@
 package com.scg.shortener.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.scg.shortener.global.CustomException;
-import com.scg.shortener.global.ExceptionCode;
+import com.scg.shortener.global.error.CustomException;
+import com.scg.shortener.global.error.ExceptionCode;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Sort;
 
 @Getter
 @AllArgsConstructor

@@ -1,16 +1,13 @@
 package com.scg.shortener.dto.response;
 
-import com.scg.shortener.dto.UrlSummary;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class GetUrlsResponse {
     @Getter
@@ -30,11 +27,8 @@ public class GetUrlsResponse {
                 page.getTotalElements(),
                 page.getNumber() + 1,
                 page.getSize(),
-                page.getTotalPages()
-        );
+                page.getTotalPages());
 
         return new GetUrlsResponse(meta, data);
     }
 }
-
-

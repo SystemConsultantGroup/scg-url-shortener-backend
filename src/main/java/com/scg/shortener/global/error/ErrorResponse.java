@@ -1,6 +1,5 @@
-package com.scg.shortener.dto;
+package com.scg.shortener.global.error;
 
-import com.scg.shortener.global.ExceptionCode;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ public class ErrorResponse {
                         .builder()
                         .statusCode(exceptionCode.getStatusCode().value())
                         .message(exceptionCode.getMessage())
-                        .build()
-                );
+                        .build());
     }
 }

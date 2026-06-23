@@ -1,12 +1,7 @@
 package com.scg.shortener.controller;
 
-import com.scg.shortener.dto.AnalyticsResponse;
-import com.scg.shortener.entity.UrlMapping;
-import com.scg.shortener.repository.UrlMappingRepository;
-import com.scg.shortener.service.AnalyticsService;
+import java.security.Principal;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -17,7 +12,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
+import com.scg.shortener.dto.response.GetAnalyticsResponse;
+import com.scg.shortener.entity.UrlMapping;
+import com.scg.shortener.global.error.CustomException;
+import com.scg.shortener.global.error.ExceptionCode;
+import com.scg.shortener.repository.UrlMappingRepository;
+import com.scg.shortener.service.AnalyticsService;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class AnalyticsController {
 
     @Transactional
     @GetMapping("/urls/{slug}/analytics")
-    public AnalyticsResponse getAnalytics(
+    public GetAnalyticsResponse getAnalytics(
             @PathVariable String slug,
             Principal principal) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -40,9 +43,9 @@ public class AnalyticsController {
             username = details.getUsername();
         }
         UrlMapping urlMapping = urlMappingRepositry.findBySlug(slug)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "URL not found"));
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_URL_ID));
         if (!urlMapping.getUser().getEmail().equals(username)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
+            throw new CustomException(ExceptionCode.NO_PERMISSION);
         }
         return analyticsService.getAnalyticsResponse(slug);
     }

@@ -1,22 +1,27 @@
 package com.scg.shortener.controller;
 
-import com.scg.shortener.dto.UrlSummary;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.scg.shortener.dto.request.GetUrlsRequest;
 import com.scg.shortener.dto.request.UpdateUrlRequest;
 import com.scg.shortener.dto.request.UrlMappingRequest;
 import com.scg.shortener.dto.response.CreateUrlResponse;
 import com.scg.shortener.dto.response.GetUrlsResponse;
 import com.scg.shortener.dto.response.UpdateUrlResponse;
-import com.scg.shortener.service.UrlService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import com.scg.shortener.global.config.routing.DynamicHostRoute;
+import com.scg.shortener.service.UrlService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor

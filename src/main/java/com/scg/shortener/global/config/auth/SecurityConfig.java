@@ -1,35 +1,36 @@
 package com.scg.shortener.global.config.auth;
 
-import com.scg.shortener.global.config.AppProperties;
-import com.scg.shortener.global.config.auth.jwt.JwtAuthenticationFilter;
-import com.scg.shortener.global.config.auth.jwt.JwtTokenProvider;
-import com.scg.shortener.global.config.auth.jwt.OAuth2SuccessHandler;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.http.MediaType;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import com.scg.shortener.global.config.AppProperties;
+import com.scg.shortener.global.config.auth.jwt.JwtAuthenticationFilter;
+import com.scg.shortener.global.config.auth.jwt.JwtTokenProvider;
+import com.scg.shortener.global.config.auth.jwt.OAuth2SuccessHandler;
+import com.scg.shortener.global.error.ErrorResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import tools.jackson.databind.ObjectMapper;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -93,13 +94,21 @@ public class SecurityConfig {
         }
 
         private static class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
+                private static final ObjectMapper objectMapper = new ObjectMapper();
+
                 @Override
                 public void commence(HttpServletRequest request, HttpServletResponse response,
                                 AuthenticationException authException) throws IOException {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                        response.getWriter().write("{\"error\":\"Authentication required\"}");
+
+                        ErrorResponse errorResponse = ErrorResponse.builder()
+                                        .statusCode(HttpServletResponse.SC_UNAUTHORIZED)
+                                        .message("인증이 필요합니다.")
+                                        .build();
+
+                        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
                 }
         }
 }
