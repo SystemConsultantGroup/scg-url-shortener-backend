@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.scg.shortener.dto.response.GetAnalyticsResponse;
 import com.scg.shortener.dto.response.GetAnalyticsResponse.DailyStat;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AnalyticsService {
     private final AnalyticsRepository analyticsRepository;
     private final UrlMappingRepository urlMappingRepository;
+    private final TransactionTemplate transactionTemplate;
     // k: slug
     // v: high 32 bits = unique visit count, low 32 bits = visit count
     private final AtomicReference<Map<String, AtomicLong>> state = new AtomicReference<>(new ConcurrentHashMap<>());
@@ -46,7 +48,8 @@ public class AnalyticsService {
     @Scheduled(cron = "* * * * * *")
     public void flush() {
         int hour = (int) (System.currentTimeMillis() / 1000 / 3600);
-        state.getAndSet(new ConcurrentHashMap<>()).forEach((slug, atomicData) -> {
+        Map<String, AtomicLong> currentBatch = state.getAndSet(new ConcurrentHashMap<>());
+        currentBatch.forEach((slug, atomicData) -> {
             long data = atomicData.get();
             if (data == 0) {
                 return;
@@ -54,11 +57,17 @@ public class AnalyticsService {
             int visitCount = (int) (data & 0xFFFFFFFFL);
             int uniqueVisitCount = (int) (data >> 32);
             try {
-                long slugId = urlMappingRepository.findBySlug(slug).orElseThrow().getId();
-                analyticsRepository.upsert(slugId, hour, visitCount, uniqueVisitCount);
-                urlMappingRepository.incrementVisitCounts(slugId, visitCount, uniqueVisitCount);
+                transactionTemplate.executeWithoutResult(status -> {
+                    long slugId = urlMappingRepository.findBySlug(slug)
+                            .orElseThrow(() -> new IllegalArgumentException("Slug not found: " + slug))
+                            .getId();
+                    analyticsRepository.upsert(slugId, hour, visitCount, uniqueVisitCount);
+                    urlMappingRepository.incrementVisitCounts(slugId, visitCount, uniqueVisitCount);
+                });
             } catch (Exception e) {
-                log.error("Failed to flush analytics for slug: {}", slug, e);
+                // 실패 시 클릭 데이터를 다시 메모리로 원복 후 다음 스케쥴에 재시도
+                log.error("Analystics Flush Failed for slug {}, restoring memory...", slug, e);
+                state.get().computeIfAbsent(slug, k -> new AtomicLong()).addAndGet(data);
             }
         });
     }
