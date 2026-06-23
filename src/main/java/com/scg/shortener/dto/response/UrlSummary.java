@@ -1,10 +1,10 @@
-package com.scg.shortener.dto;
+package com.scg.shortener.dto.response;
+
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

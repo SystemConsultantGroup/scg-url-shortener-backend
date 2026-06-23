@@ -1,18 +1,19 @@
 package com.scg.shortener.controller;
 
-import com.scg.shortener.dto.UserResponseDto;
-import com.scg.shortener.entity.User;
-import com.scg.shortener.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.scg.shortener.dto.response.GetUserResponse;
+import com.scg.shortener.entity.User;
 import com.scg.shortener.global.config.routing.DynamicHostRoute;
+import com.scg.shortener.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,7 +23,7 @@ public class UserController {
     private final UserRepository userRepository;
 
     @GetMapping("/user")
-    public ResponseEntity<UserResponseDto> getUser() {
+    public ResponseEntity<GetUserResponse> getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
@@ -34,6 +35,6 @@ public class UserController {
         User userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 사용자입니다. email=" + email));
 
-        return ResponseEntity.ok(new UserResponseDto(userEntity));
+        return ResponseEntity.ok(new GetUserResponse(userEntity));
     }
 }

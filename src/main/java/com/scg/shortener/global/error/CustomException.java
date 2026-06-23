@@ -1,11 +1,10 @@
-package com.scg.shortener.global;
+package com.scg.shortener.global.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @AllArgsConstructor
 @Getter
-public class CustomException extends RuntimeException{
+public class CustomException extends RuntimeException {
     private final ExceptionCode exceptionCode;
 }
