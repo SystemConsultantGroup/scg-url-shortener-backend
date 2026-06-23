@@ -112,6 +112,7 @@ public class UrlService {
             throw new CustomException(ExceptionCode.NO_PERMISSION);
         }
 
+        analyticsRepository.deleteBySlug(urlMapping);
         urlMappingRepository.delete(urlMapping);
     }
 
