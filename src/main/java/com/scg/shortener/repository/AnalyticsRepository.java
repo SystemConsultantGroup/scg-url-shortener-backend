@@ -16,6 +16,11 @@ public interface AnalyticsRepository extends JpaRepository<Analytics, Analytics.
 
     @Modifying
     @Transactional
+    @Query("DELETE FROM Analytics a WHERE a.slug = :slug")
+    void deleteBySlug(@Param("slug") UrlMapping slug);
+
+    @Modifying
+    @Transactional
     @Query(nativeQuery = true, value = """
             INSERT INTO analytics (slug_id, hour, visit_count, unique_visit_count)
             VALUES (:slug, :hour, :visitCount, :uniqueVisitCount)
