@@ -2,7 +2,7 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
 app:
   api-base-domain: "api.shortener.scg.skku.ac.kr"
   api-base-url: "https://${app.api-base-domain}"
