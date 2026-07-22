@@ -4,10 +4,10 @@ spring:
     hibernate:
       ddl-auto: none
 app:
-  api-base-domain: "api.shortener-prod.scg.skku.ac.kr"
+  api-base-domain: "api.shortener.scg.skku.ac.kr"
   api-base-url: "https://${app.api-base-domain}"
-  slug-base-domain: "shortener-prod.scg.skku.ac.kr"
+  slug-base-domain: "app.shortener.scg.skku.ac.kr"
   slug-base-url: "https://${app.slug-base-domain}"
-  dashboard-url: "https://app.shortener-prod.scg.skku.ac.kr/dashboard"
+  dashboard-url: "https://app.shortener.scg.skku.ac.kr/dashboard"
   allowed-origins:
-    - "https://app.shortener-prod.scg.skku.ac.kr"
+    - "https://app.shortener.scg.skku.ac.kr"
