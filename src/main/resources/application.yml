@@ -2,7 +2,8 @@ spring:
   application:
     name: shortener
   profiles:
-    default: dev
+    default: local-group
     group:
-      prod: common, prod
-      dev: common, dev
+      qa-group: common,qa
+      prod-group: common,prod
+      local-group: common, local
