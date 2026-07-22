@@ -8,6 +8,7 @@ app:
   api-base-url: "https://${app.api-base-domain}"
   slug-base-domain: "scg.sh"
   slug-base-url: "https://${app.slug-base-domain}"
-  dashboard-url: "https://scg.sh/dashboard"
+  dashboard-url: "https://app.scg.sh/dashboard"
   allowed-origins:
+    - "https://app.scg.sh"
     - "https://scg.sh"
